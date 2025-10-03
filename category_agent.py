@@ -1,6 +1,6 @@
 from langchain_openai import ChatOpenAI
+from langchain_neo4j import Neo4jGraph
 from langchain.prompts import ChatPromptTemplate
-from neo4j import GraphDatabase
 import json
 from dotenv import load_dotenv
 import os
@@ -10,7 +10,7 @@ load_dotenv()
 class CategoryAgent:
     def __init__(self,api_key:str, neo4j_uri:str, neo4j_user:str, neo4j_password:str):
         self.llm= ChatOpenAI(model="gpt-3.5-turbo", openai_api_key=api_key)
-        self.neo4j_driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_user, neo4j_password))
+        self.neo4j_driver = Neo4jGraph(neo4j_uri, neo4j_user, neo4j_password)
         self.system_prompt ="""
     Analyze the user query: '{{query}}' and categorize the mentioned term(s) into one or more of the following categories:
 
@@ -58,33 +58,19 @@ class CategoryAgent:
         names = name.split(",") if name else []
         categories = [cat.strip() for cat in categories if cat.strip()]
         names = [n.strip() for n in names if n.strip()]
-        #print("Categories:", categories)
-        #print("Names:", names)
+
         self.categories = categories
         self.names = names
+
         results=[]
-        for i in range(len(self.categories)):
-            query = self.query_map.get(self.categories[i])
-            if not query:
-                continue
-    
-            res = self.neo4j_query(self.categories[i], self.names[i])
-            results.append({"category": self.categories[i], "name": self.names[i], "results": res})
-        return results
-    
-    def neo4j_query(self,category:str, name:str):
+        for category, name in zip(self.categories, self.names):
             query = self.query_map.get(category)
             if not query:
-                return []
-            with self.neo4j_driver.session() as session:
-                #print(f"Running query for category: {category} with name: {name}")
-                res = session.run(query, {"param": name}).data()
-                return res
-            
-    def close(self):
-        if self.neo4j_driver:
-            self.neo4j_driver.close()
+                continue
+            res = self.neo4j_driver.query(query, {"param": name})
+            results.append({"category": category, "name": name, "results": res})
 
+        return results
 
 
         
@@ -102,5 +88,6 @@ class CategoryAgent:
   
 
     
+
 
     
