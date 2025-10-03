@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
 from dotenv import load_dotenv
@@ -9,6 +10,14 @@ import requests
 
 app = FastAPI()
 load_dotenv()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # İstersen buraya ["http://localhost:3000", "https://seninfrontend.com"] da yazabilirsin
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 openai_api_key = os.getenv("OPENAI_API_KEY")
@@ -97,3 +106,4 @@ def get_movie_image(movie_title: str):
 
     
         
+
