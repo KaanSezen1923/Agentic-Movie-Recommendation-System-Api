@@ -32,43 +32,43 @@ class RecommenderAgent:
         [{{
             "Title": "Inception",
             "Director": "Christopher Nolan",
-            "Star Cast": ["Leonardo DiCaprio", "Joseph Gordon-Levitt", "Elliot Page"],
+            "Star_Cast": ["Leonardo DiCaprio", "Joseph Gordon-Levitt", "Elliot Page"],
             "Genre": "Science Fiction",
             "Overview": "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a CEO.",
             "Reason": "This movie is recommended because it combines elements of science fiction and psychological thriller, which aligns with the user's interest in complex narratives.",
-            "Image URL": "https://example.com/inception.jpg"
+            "Image_URL": "https://example.com/inception.jpg"
             
             "Title": "Interstellar",
             "Director": "Christopher Nolan",
-            "Star Cast": ["Matthew McConaughey", "Anne Hathaway", "Jessica Chastain"],
+            "Star_Cast": ["Matthew McConaughey", "Anne Hathaway", "Jessica Chastain"],
             "Genre": "Science Fiction",
             "Overview": "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.",
             "Reason": "This movie is recommended because it combines elements of science fiction and psychological thriller, which aligns with the user's interest in complex narratives.",
-            "Image URL": "https://example.com/interstellar.jpg"
+            "Image_URL": "https://example.com/interstellar.jpg"
             
             "Title": "Prestige",
             "Director": "Christopher Nolan",
-            "Star Cast": ["Christian Bale", "Hugh Jackman", "Scarlett Johansson"],
+            "Star_Cast": ["Christian Bale", "Hugh Jackman", "Scarlett Johansson"],
             "Genre": "Science Fiction",
             "Overview": "After a tragic accident, two stage magicians engage in a battle to create the ultimate illusion while sacrificing everything they have to outwit each other.",
             "Reason": "This movie is recommended because it combines elements of science fiction and psychological thriller, which aligns with the user's interest in complex narratives.",
-            "Image URL": "https://example.com/prestige.jpg"
+            "Image_URL": "https://example.com/prestige.jpg"
             
             "Title": "Batman Dark Knight",
             "Director": "Christopher Nolan",
-            "Star Cast": ["Christian Bale", "Heath Ledger", "Aaron Eckhart"],
+            "Star_Cast": ["Christian Bale", "Heath Ledger", "Aaron Eckhart"],
             "Genre": "Crime, Drama, Action",
             "Overview": "When the menace known as the Joker emerges from his mysterious past, he wreaks havoc and chaos on the people of Gotham. The Dark Knight must accept one of the greatest psychological and physical tests of his ability to fight injustice.",
             "Reason": "This movie is recommended because it combines elements of crime, drama, and action, which aligns with the user's interest in complex narratives.",
-            "Image URL": "https://example.com/dark_knight.jpg"
+            "Image_URL": "https://example.com/dark_knight.jpg"
             
             "Title": Memento",
             "Director": "Christopher Nolan",
-            "Star Cast": ["Guy Pearce", "Carrie-Anne Moss", "Joe Pantoliano"],
+            "Star_Cast": ["Guy Pearce", "Carrie-Anne Moss", "Joe Pantoliano"],
             "Genre": "Mystery, Thriller",
             "Overview": "a man suffering from short-term memory loss uses notes and tattoos to hunt for revenge against the person he thinks killed his wife.",
             "Reason": "This movie is recommended because it combines elements of mystery and thriller, which aligns with the user's interest in complex narratives.",
-            "Image URL": "https://example.com/memento.jpg"
+            "Image_URL": "https://example.com/memento.jpg"
             
             
             
@@ -120,5 +120,6 @@ class RecommenderAgent:
 
     
     
+
 
     
