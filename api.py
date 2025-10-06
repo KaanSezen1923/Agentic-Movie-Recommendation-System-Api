@@ -134,6 +134,11 @@ def serialize_chat_document(doc) -> dict:
     data["id"] = doc.id
     return data
 
+@app.get("/")
+def root():
+    return {"status": "ok"}
+
+
 
 @app.post("/signup", response_model=AuthResponse)
 def signup(payload: SignupRequest):
@@ -290,5 +295,6 @@ def get_movie_image(movie_title: str):
 
     
         
+
 
 
