@@ -19,7 +19,7 @@ load_dotenv()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://movierag.vercel.app"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -295,6 +295,7 @@ def get_movie_image(movie_title: str):
 
     
         
+
 
 
 
