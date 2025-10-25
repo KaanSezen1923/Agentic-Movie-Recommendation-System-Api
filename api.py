@@ -8,6 +8,9 @@ import firebase_admin
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from firebase_admin import credentials, firestore
+from firebase_admin import auth as firebase_auth
+from google.oauth2 import id_token
+from google.auth.transport import requests as google_requests
 from pydantic import BaseModel, EmailStr, Field
 from dotenv import load_dotenv
 
@@ -69,6 +72,12 @@ class SignupRequest(BaseModel):
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str
+    
+class GoogleAuthRequest(BaseModel):
+    idToken: str
+    email: EmailStr
+    displayName: Optional[str] = None
+    photoURL: Optional[str] = None
 
 
 class AuthResponse(BaseModel):
@@ -166,6 +175,96 @@ def signup(payload: SignupRequest):
 
     return AuthResponse(message="Signup successful", username=payload.username, email=payload.email)
 
+@app.post("/auth/google", response_model=AuthResponse)
+async def google_auth(payload: GoogleAuthRequest):
+
+
+    try:
+       
+        db = get_firestore_client()
+        users_ref = db.collection("users")
+
+       
+        print(f"🔍 Google ID token doğrulanıyor: {payload.email}")
+        try:
+            decoded_token = firebase_auth.verify_id_token(payload.idToken)
+            uid = decoded_token.get("uid")
+            email = decoded_token.get("email")
+        except Exception as e:
+            print(f"❌ Token doğrulama hatası: {e}")
+            raise HTTPException(status_code=401, detail="Invalid or expired Google ID token")
+
+        if not email or email != payload.email:
+            raise HTTPException(status_code=401, detail="Email mismatch")
+
+       
+        existing_user = next(
+            users_ref.where("email", "==", payload.email).limit(1).stream(),
+            None
+        )
+
+        if existing_user:
+            username = existing_user.id
+            print(f"✅ Var olan kullanıcı bulundu: {username}")
+
+            users_ref.document(username).update({
+                "last_login_at": datetime.utcnow().isoformat(),
+                "google_uid": uid,
+                "display_name": payload.displayName or username,
+                "photo_url": payload.photoURL,
+                "auth_provider": "google"
+            })
+
+            return AuthResponse(
+                message="Login successful",
+                username=username,
+                email=payload.email
+            )
+
+        
+        base_username = ''.join(
+            c for c in payload.email.split('@')[0]
+            if c.isalnum() or c in ['_', '-']
+        )
+        username = base_username
+        counter = 1
+
+        while users_ref.document(username).get().exists:
+            username = f"{base_username}{counter}"
+            counter += 1
+
+        print(f"🆕 Yeni kullanıcı oluşturuluyor: {username}")
+
+        users_ref.document(username).set({
+            "email": payload.email,
+            "google_uid": uid,
+            "display_name": payload.displayName or username,
+            "photo_url": payload.photoURL,
+            "auth_provider": "google",
+            "created_at": datetime.utcnow().isoformat(),
+            "last_login_at": datetime.utcnow().isoformat(),
+            "password_salt": None,
+            "password_hash": None
+        })
+
+        return AuthResponse(
+            message="Account created and logged in successfully",
+            username=username,
+            email=payload.email
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        print(f"❌ Google auth general error: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Google authentication failed: {str(e)}"
+        )
+
+
 
 @app.post("/login", response_model=AuthResponse)
 def login(payload: LoginRequest):
@@ -177,6 +276,14 @@ def login(payload: LoginRequest):
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
     user_data = user_doc.to_dict() or {}
+    
+    
+    if user_data.get("auth_provider") == "google":
+        raise HTTPException(
+            status_code=400, 
+            detail="This account uses Google Sign-In. Please use Google authentication."
+        )
+    
     password_salt = user_data.get("password_salt")
     password_hash = user_data.get("password_hash")
 
@@ -295,6 +402,17 @@ def get_movie_image(movie_title: str):
 
     
         
+
+
+
+
+
+
+    
+
+    
+        
+
 
 
 
